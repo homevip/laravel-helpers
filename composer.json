@@ -1,0 +1,31 @@
+{
+    "name": "homevip/laravel-helpers",
+    "description": "this is test",
+    "homepage": "https://github.com/homevip/laravel-helpers.git",
+    "license": "MIT",
+    "keywords": [
+        "library",
+        "helpers",
+        "laravel",
+        "php"
+    ],
+    "authors": [
+        {
+            "name": "homevip",
+            "email": "homevip@126.com"
+        }
+    ],
+    "require": {
+        "php": "^7.0",
+        "laravel/framework": "5.8.*|^6.0"
+    },
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "cncoders\\helper\\": "src"
+        },
+        "files": [
+            "src/Methods/helpers.php"
+        ]
+    }
+}
