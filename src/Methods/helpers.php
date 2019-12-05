@@ -3,7 +3,7 @@
 /**
  * 获取客户端IP
  * 
- * * @return string 返回IP
+ * @return string 返回IP
  */
 if (!function_exists('getIP')) {
     function getIP()
@@ -29,8 +29,8 @@ if (!function_exists('getIP')) {
  * @param string $prefix 前缀
  * @return void
  */
-if (!function_exists('get_order_sn')) {
-    function get_order_sn($prefix = ''): string
+if (!function_exists('builderOrderSn')) {
+    function builderOrderSn($prefix = ''): string
     {
         $prefix = !empty($prefix) ? $prefix : '';
         return  $prefix . date('Ymd') .
@@ -40,5 +40,22 @@ if (!function_exists('get_order_sn')) {
                 array_map('ord', str_split(substr(uniqid($prefix), 7, 13), 1))
             ), 0, 8) .
             sprintf('%04d', rand(0, 9999));
+    }
+}
+
+
+/**
+ * 两个时间 相差天数
+ * 
+ * @param integer $startTime   起始日期
+ * @param integer $endTime     结束日期
+ * @return integer             天数
+ */
+if (!function_exists('getIntervalDays')) {
+    function getIntervalDays($startDate, $endDate)
+    {
+        $start_Date = new DateTime($startDate);
+        $end_Date   = new DateTime($endDate);
+        return $start_Date->diff($end_Date)->days;
     }
 }
