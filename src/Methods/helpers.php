@@ -374,3 +374,86 @@ if (!function_exists('copyDir')) {
         return true;
     }
 }
+
+
+/**
+ * CURL - GET
+ */
+if (!function_exists('getCurl')) {
+    function getCurl($url)
+    {
+        // 初始化
+        $curl = curl_init();
+        $user_agent = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36';
+
+        // 设置抓取的url
+        curl_setopt($curl, CURLOPT_URL, $url);
+
+        // 设置头文件的信息作为数据流输出
+        // curl_setopt ( $curl, CURLOPT_HEADER, 1 ); // 注释掉 显示 HTTP 头部信息 开启后有助于调试信息
+
+        // 设置获取的信息以文件流的形式返回，而不是直接输出。
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_ENCODING, "");
+        curl_setopt($curl, CURLOPT_MAXREDIRS, 10);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+        curl_setopt($curl, CURLOPT_HTTP_VERSION, "CURL_HTTP_VERSION_1_1");
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "GET");
+        curl_setopt($curl, CURLOPT_HTTPHEADER, []);
+        curl_setopt($curl, CURLOPT_USERAGENT, $user_agent);
+
+        // 发起 https 请求
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+
+
+        // 执行命令
+        $Data = curl_exec($curl);
+
+        // 关闭URL请求
+        curl_close($curl);
+
+        // 返回(显示)获得的数据
+        return $Data;
+    }
+}
+
+/**
+ * CURL - POST
+ */
+if (!function_exists('postCurl')) {
+    function postCurl($url, $param)
+    {
+        // 初始化
+        $curl = curl_init();
+        $user_agent = 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.103 Safari/537.36';
+
+        // 设置抓取的url
+        curl_setopt($curl, CURLOPT_URL, $url);
+
+        // 设置头文件的信息作为数据流输出
+        // curl_setopt ( $curl, CURLOPT_HEADER, 1 ); // 注释掉 显示 HTTP 头部信息 开启后有助于调试信息
+
+        // 设置获取的信息以文件流的形式返回，而不是直接输出。
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+
+        // 设置post方式提交
+        curl_setopt($curl, CURLOPT_POST, 1);
+
+        // 设置post数据
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $param);
+        curl_setopt($curl, CURLOPT_USERAGENT, $user_agent);
+
+        // 发起 https 请求
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+
+        // 执行命令
+        $Data = curl_exec($curl);
+
+        // 关闭URL请求
+        curl_close($curl);
+        // 返回(显示)获得的数据
+        return $Data;
+    }
+}
