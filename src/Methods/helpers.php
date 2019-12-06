@@ -24,6 +24,56 @@ if (!function_exists('getIP')) {
 
 
 /**
+ * 自定义缓存
+ * 
+ * @param [type] $name
+ * @param string $value
+ * @param integer $options 缓存时间 /秒
+ * @return void
+ */
+if (!function_exists('S')) {
+    function S(string $name, $value = '', int $options = 60)
+    {
+        $cache = app('redis')->connection('cache');
+        $name = 'S_' . md5($name);
+
+        if ('' === $value) {
+            // 获取缓存
+            return json_decode($cache->get($name), true);
+        } elseif (is_null($value)) {
+            // 删除缓存
+            return $cache->del($name);
+        } else {
+            // 缓存数据
+            $expire = (int) $options;
+            return $cache->setex($name, $expire, json_encode($value, JSON_UNESCAPED_UNICODE));
+        }
+    }
+}
+
+
+/**
+ * 自定义返回函数
+ */
+if (!function_exists('error')) {
+    function error($code = 200, $message = NULL, $data = [])
+    {
+        $package = array();
+        if ($code) {
+            $package['code']    = $code;
+            $package['message'] = $message ?? config('response_code')[$code];
+            $package['data']    = null;
+        } else {
+            $package['code']    = $code;
+            $package['message'] = config('response_code')[$code];
+            $package['data']    = $message ?? $data;
+        }
+        return \Response::json($package);
+    }
+}
+
+
+/**
  * 生成订单号
  * 
  * @param string $prefix 前缀
@@ -123,27 +173,6 @@ if (!function_exists('sql_debug')) {
             // 	echo $sql->sql;
             // 	dump ( $sql->bindings );
         });
-    }
-}
-
-
-/**
- * 自定义返回函数
- */
-if (!function_exists('error')) {
-    function error($code = 200, $message = NULL, $data = [])
-    {
-        $package = array();
-        if ($code) {
-            $package['code']    = $code;
-            $package['message'] = $message ?? config('response_code')[$code];
-            $package['data']    = null;
-        } else {
-            $package['code']    = $code;
-            $package['message'] = config('response_code')[$code];
-            $package['data']    = $message ?? $data;
-        }
-        return \Response::json($package);
     }
 }
 
