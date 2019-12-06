@@ -408,13 +408,13 @@ if (!function_exists('getCurl')) {
 
 
         // 执行命令
-        $Data = curl_exec($curl);
+        $data = curl_exec($curl);
 
         // 关闭URL请求
         curl_close($curl);
 
         // 返回(显示)获得的数据
-        return $Data;
+        return $data;
     }
 }
 
@@ -449,11 +449,11 @@ if (!function_exists('postCurl')) {
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
 
         // 执行命令
-        $Data = curl_exec($curl);
+        $data = curl_exec($curl);
 
         // 关闭URL请求
         curl_close($curl);
         // 返回(显示)获得的数据
-        return $Data;
+        return $data;
     }
 }
