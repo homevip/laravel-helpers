@@ -55,27 +55,6 @@ if (!function_exists('S')) {
 /**
  * 自定义返回函数
  */
-if (!function_exists('error')) {
-    function error($code = 200, $message = NULL, $data = [])
-    {
-        $package = array();
-        if ($code) {
-            $package['code']    = $code;
-            $package['message'] = $message ?? config('response_code')[$code];
-            $package['data']    = null;
-        } else {
-            $package['code']    = $code;
-            $package['message'] = config('response_code')[$code];
-            $package['data']    = $message ?? $data;
-        }
-        return \Response::json($package);
-    }
-}
-
-
-/**
- * 自定义返回函数
- */
 if (!function_exists('outPutJson')) {
     function outPutJson($code = 200, $message = NULL, $data = [])
     {
