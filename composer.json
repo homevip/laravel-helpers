@@ -22,7 +22,7 @@
     "type": "library",
     "autoload": {
         "psr-4": {
-            "homevip\\helper\\Collections\\": "src"
+            "homevip\\helper\\": "src"
         },
         "files": [
             "src/Methods/helpers.php"
