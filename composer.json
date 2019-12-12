@@ -22,7 +22,7 @@
     "type": "library",
     "autoload": {
         "psr-4": {
-            "cncoders\\helper\\": "src"
+            "homevip\\helper\\Collections\\": "src"
         },
         "files": [
             "src/Methods/helpers.php"
