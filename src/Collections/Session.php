@@ -18,7 +18,7 @@ class Session
 	 */
 	private $parameter = [
 		'session_name' 	=> NULL,
-        'lifetime' 		=> NULL,
+		'lifetime' 		=> NULL,
 		'path' 			=> NULL,
 		'domain' 		=> NULL,
 		'secure' 		=> NULL,

@@ -4,7 +4,6 @@ namespace homevip\helper;
 
 interface IToken
 {
-
     /**
      * 有效时间/秒
      */
