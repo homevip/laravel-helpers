@@ -11,6 +11,10 @@ class Session implements ISession, ISessionHandler
      */
     const EXPIRES_IN = 7200;
 
+
+    // redis 实例
+    public $redis;
+
     /**
      * 操作方法
      *
@@ -59,6 +63,16 @@ class Session implements ISession, ISessionHandler
         if ($this->status()) {
             return true;
         }
+
+        // redis 初始化
+        $this->redis = new \Redis();
+        $this->redis->connect(
+            env('REDIS_HOST', '127.0.0.1'),
+            env('REDIS_PORT', 6379)
+        );
+        $this->redis->auth(env('REDIS_PASSWORD', null));
+        $this->redis->select(10);
+
 
         session_set_save_handler(
             array($this, 'open'),
@@ -194,21 +208,6 @@ class Session implements ISession, ISessionHandler
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /**
      * 回调函数类似于类的构造函数
      *
@@ -251,7 +250,7 @@ class Session implements ISession, ISessionHandler
      */
     function read(string $sessionId): string
     {
-        $value = S($sessionId);
+        $value = $this->cache($sessionId);
         return $value ? $value : "";
     }
 
@@ -265,7 +264,7 @@ class Session implements ISession, ISessionHandler
      */
     function write(string $sessionId, string $data)
     {
-        return S($sessionId, $data, $this->parameter['lifetime']);
+        return $this->cache($sessionId, $data, $this->parameter['lifetime']);
     }
 
 
@@ -277,7 +276,7 @@ class Session implements ISession, ISessionHandler
      */
     function destroy($sessionId)
     {
-        return S((string) $sessionId);
+        return $this->cache((string) $sessionId);
     }
 
 
@@ -299,6 +298,33 @@ class Session implements ISession, ISessionHandler
         // 初始化
         $this->initi();
         return call_user_func_array([$this, $method], $args);
+    }
+
+
+    /**
+     * redis 缓存设置
+     *
+     * @param string $name
+     * @param string $value
+     * @param integer $options
+     * @return void
+     */
+    public function cache(string $name, $value = '', int $options = 60)
+    {
+        $cache = $this->redis;
+        $name = 'session_' . $name;
+
+        if ('' === $value) {
+            // 获取缓存
+            return json_decode($cache->get($name), true);
+        } elseif (is_null($value)) {
+            // 删除缓存
+            return $cache->del($name);
+        } else {
+            // 缓存数据
+            $expire = (int) $options;
+            return $cache->setex($name, $expire, json_encode($value, JSON_UNESCAPED_UNICODE));
+        }
     }
 
 
