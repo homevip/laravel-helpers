@@ -6,14 +6,6 @@ namespace homevip\helper;
 interface ISession
 {
 	/**
-	 * 初始化参数
-	 *
-	 * @return void
-	 */
-	public function initi();
-
-
-	/**
 	 * 回调函数类似于类的构造函数
 	 *
 	 * @param [type] $savePath

@@ -15,15 +15,16 @@ class Session implements ISession, ISessionHandler
     // redis 实例
     public $redis;
 
+
     /**
      * 操作方法
      *
      * @var array
      */
     private $parameter = [
-        'session_name'  => NULL,
-        'lifetime'      => NULL,
-        'path'          => NULL,
+        'session_name'  => 'HOMEVIP_ID',
+        'lifetime'      => self::EXPIRES_IN,
+        'path'          => '/',
         'domain'        => NULL,
         'secure'        => NULL,
         'httponly'      => NULL,
@@ -60,19 +61,10 @@ class Session implements ISession, ISessionHandler
      */
     public function initi()
     {
+        // 当前会话状态
         if ($this->status()) {
             return true;
         }
-
-        // redis 初始化
-        $this->redis = new \Redis();
-        $this->redis->connect(
-            env('REDIS_HOST', '127.0.0.1'),
-            env('REDIS_PORT', 6379)
-        );
-        $this->redis->auth(env('REDIS_PASSWORD', null));
-        $this->redis->select(10);
-
 
         session_set_save_handler(
             array($this, 'open'),
@@ -86,20 +78,12 @@ class Session implements ISession, ISessionHandler
         // 下面这行代码可以防止使用对象作为会话保存管理器时可能引发的非预期行为
         register_shutdown_function('session_write_close');
 
-
-        $this->parameter['session_name']    = $this->parameter['session_name']  ?? 'HOMEVIP_ID';
-        $this->parameter['lifetime']        = $this->parameter['lifetime']      ?? self::EXPIRES_IN;
-        $this->parameter['path']            = $this->parameter['path']          ?? '/';
-        $this->parameter['domain']          = $this->parameter['domain']        ?? 'homevip@126.com';
         $this->parameter['secure']          = $this->parameter['secure']        ?? $_SERVER['REQUEST_SCHEME'] ? false : true;
         $this->parameter['httponly']        = $this->parameter['httponly']      ?? true;
         $this->parameter['options']         = $this->parameter['options']       ?? [];
 
-        // // 设置 SESSION 名字
+        // 设置 SESSION 名字
         session_name($this->parameter['session_name']);
-
-        // 设置 session_id
-        // session_id(uniqid());
 
         session_set_cookie_params(
             $this->parameter['lifetime'],
@@ -209,6 +193,31 @@ class Session implements ISession, ISessionHandler
 
 
     /**
+     * redis 连接池
+     *
+     * @param string $host
+     * @param integer $port
+     * @param string $password
+     * @param integer $db
+     * @return void
+     */
+    public function redisConnect(string $host = '127.0.0.1', int $port = 6379, string $password = null, int $db = 10)
+    {
+        try {
+            $this->redis = new \Redis();
+            $this->redis->connect($host, $port);
+            if ('' != $password) {
+                $this->redis->auth($password);
+            }
+            $this->redis->select($db);
+        } catch (\Exception $e) {
+            echo 'redis 连接错误! ' . $e->getMessage();
+        }
+        return $this;
+    }
+
+
+    /**
      * 回调函数类似于类的构造函数
      *
      * @param [type] $savePath
@@ -313,6 +322,10 @@ class Session implements ISession, ISessionHandler
     {
         $cache = $this->redis;
         $name = 'session_' . $name;
+
+        if ('' == $cache) {
+            exit('redis 连接错误');
+        }
 
         if ('' === $value) {
             // 获取缓存

@@ -6,14 +6,6 @@ namespace homevip\helper;
 interface ISessionHandler
 {
 	/**
-	 * 初始化参数
-	 *
-	 * @return void
-	 */
-	public function initi();
-
-
-	/**
 	 * 设置会话名称
 	 *
 	 * @param string $session_name
@@ -78,4 +70,15 @@ interface ISessionHandler
 	 * @return void
 	 */
 	public function options(array $options);
+
+	/**
+	 * redis 连接池
+	 *
+	 * @param string $host
+	 * @param integer $port
+	 * @param string $password
+	 * @param integer $db
+	 * @return void
+	 */
+	public function redisConnect(string $host = '127.0.0.1', int $port = 6379, string $password = null, int $db = 10);
 }
