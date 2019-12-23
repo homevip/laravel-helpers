@@ -66,34 +66,37 @@ class Session implements ISession, ISessionHandler
             return true;
         }
 
-        session_set_save_handler(
-            array($this, 'open'),
-            array($this, 'close'),
-            array($this, 'read'),
-            array($this, 'write'),
-            array($this, 'destroy'),
-            array($this, 'gc')
-        );
+        try {
+            session_set_save_handler(
+                array($this, 'open'),
+                array($this, 'close'),
+                array($this, 'read'),
+                array($this, 'write'),
+                array($this, 'destroy'),
+                array($this, 'gc')
+            );
 
-        // 下面这行代码可以防止使用对象作为会话保存管理器时可能引发的非预期行为
-        register_shutdown_function('session_write_close');
+            // 下面这行代码可以防止使用对象作为会话保存管理器时可能引发的非预期行为
+            register_shutdown_function('session_write_close');
 
-        $this->parameter['secure']          = $this->parameter['secure']        ?? $_SERVER['REQUEST_SCHEME'] ? false : true;
-        $this->parameter['httponly']        = $this->parameter['httponly']      ?? true;
-        $this->parameter['options']         = $this->parameter['options']       ?? [];
+            $this->parameter['secure']          = $this->parameter['secure']        ?? $_SERVER['REQUEST_SCHEME'] ? false : true;
+            $this->parameter['httponly']        = $this->parameter['httponly']      ?? true;
+            $this->parameter['options']         = $this->parameter['options']       ?? [];
 
-        // 设置 SESSION 名字
-        session_name($this->parameter['session_name']);
+            // 设置 SESSION 名字
+            session_name($this->parameter['session_name']);
 
-        session_set_cookie_params(
-            $this->parameter['lifetime'],
-            $this->parameter['path'],
-            $this->parameter['domain'],
-            $this->parameter['secure'],
-            $this->parameter['httponly']
-        );
+            session_set_cookie_params(
+                $this->parameter['lifetime'],
+                $this->parameter['path'],
+                $this->parameter['domain'],
+                $this->parameter['secure'],
+                $this->parameter['httponly']
+            );
 
-        session_start();
+            session_start();
+        } catch (\Exception $e) {
+        }
     }
 
 
