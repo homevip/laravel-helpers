@@ -133,11 +133,15 @@ class Cookie
 	/**
 	 * 删除 Cookie
 	 *
-	 * @param string $name
+	 * @param string $name $name 	Cookie 名称
+	 * @param array $options
 	 * @return void
 	 */
-	public function del(string $name)
+	public function del(string $name, array $options = [])
 	{
-		return $this->set($name, '', ['expire' => time() - 1]);
+		if (is_array($options) && count($options) > 0) {
+			$this->setOptions($options);
+		}
+		$this->set($name, '', ['expire' => time() - 1]);
 	}
 }
