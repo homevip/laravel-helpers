@@ -5,6 +5,10 @@
         ->expire(60 * 10)
         ->set('key', 'aaaa');
 
+    // 读取数据
+    $return =  Cookie::instance()
+        ->get('key');
+
     //  更新
     Cookie::instance()
         ->expire(60 * 10)
@@ -14,4 +18,5 @@
     Cookie::instance()
         ->expire(60 * 10)
         ->del('key');
+
 ```

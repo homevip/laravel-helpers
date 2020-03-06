@@ -17,6 +17,7 @@ class Cookie
 		'httponly' 	=> NULL, // 是否使用 https访问 Cookie,默认 false,如果设置成true, 客户端 js 无法操作这个 Cookie了,使用这个参数可以减少 XSS攻击
 	];
 
+
 	public function expire(string $expire)
 	{
 		$this->options['expire'] = $expire;
@@ -96,36 +97,51 @@ class Cookie
 	/**
 	 * 设置 Cookie
 	 *
-	 * @param [type] $key
+	 * @param [type] $name
 	 * @param [type] $value
 	 * @return void
 	 */
-	protected function set(string $key, $value)
+	protected function set(string $name, $value)
 	{
-		return setcookie($key, $value, $this->options['expire'], $this->options['path'], $this->options['domain'], $this->options['secure'], $this->options['httponly']);
+		return setcookie($name, $value, $this->options['expire'], $this->options['path'], $this->options['domain'], $this->options['secure'], $this->options['httponly']);
 	}
+
+	/**
+	 * 读取 Cookie
+	 *
+	 * @param [type] $name
+	 * @return void
+	 */
+	protected function get(string $name)
+	{
+		if (isset($_COOKIE[$name])) {
+			return $_COOKIE[$name];
+		}
+		return null;
+	}
+
 
 	/**
 	 * 更新 Cookie
 	 *
-	 * @param [type] $key
+	 * @param [type] $name
 	 * @param [type] $value
 	 * @return void
 	 */
-	protected function update(string $key, $value)
+	protected function update(string $name, $value)
 	{
-		return setcookie($key, $value, $this->options['expire'], $this->options['path'], $this->options['domain'], $this->options['secure'], $this->options['httponly']);
+		return setcookie($name, $value, $this->options['expire'], $this->options['path'], $this->options['domain'], $this->options['secure'], $this->options['httponly']);
 	}
 
 
 	/**
 	 * 删除 Cookie
 	 *
-	 * @param string $key
+	 * @param string $name
 	 * @return void
 	 */
-	protected function del(string $key)
+	protected function del(string $name)
 	{
-		return setcookie($key, '', $this->options['expire'] - 1, $this->options['path'], $this->options['domain'], $this->options['secure'], $this->options['httponly']);
+		return setcookie($name, '', $this->options['expire'] - 1, $this->options['path'], $this->options['domain'], $this->options['secure'], $this->options['httponly']);
 	}
 }
