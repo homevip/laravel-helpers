@@ -1,22 +1,21 @@
 ##### 使用方法 [支持连贯操作]
 ```
+    $Cookie = Cookie::instance();
+
     // 存储
-    Cookie::instance()
-        ->expire(60 * 10)
-        ->set('key', 'aaaa');
+    $Cookie->set('key', 'test', [
+        'expire' => 60 * 10
+    ]);
 
-    // 读取数据
-    $return =  Cookie::instance()
-        ->get('key');
-
-    //  更新
-    Cookie::instance()
-        ->expire(60 * 10)
-        ->update('key', 'bbbb');
+    // 修改
+    $Cookie->update('key', '李四', [
+        'expire' => 60 * 10
+    ]);
 
     // 删除
-    Cookie::instance()
-        ->expire(60 * 10)
-        ->del('key');
+    $Cookie->del('key');
+
+    // 读取
+    $Cookie->get('key');
 
 ```

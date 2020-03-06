@@ -5,56 +5,61 @@ namespace homevip\helper;
 class Cookie
 {
 	/**
-	 * 连贯操作方法
-	 *
-	 * @var array
-	 */
-	private $options = [
-		'expire' 	=> NULL, // 设置过期时间[时间戳],默认值 0
-		'path' 		=> NULL, // Cookie 的有效路径
-		'domain' 	=> NULL, // Cookie 的作用域,默认在本域下
-		'secure' 	=> NULL, // 设置 Cookie 只能通过 https传输,默认值 false
-		'httponly' 	=> NULL, // 是否使用 https访问 Cookie,默认 false,如果设置成true, 客户端 js 无法操作这个 Cookie了,使用这个参数可以减少 XSS攻击
-	];
-
-
-	public function expire(string $expire)
-	{
-		$this->options['expire'] = $expire;
-		return $this;
-	}
-
-	public function path(string $path)
-	{
-		$this->options['path'] = $path;
-		return $this;
-	}
-
-	public function domain(string $domain)
-	{
-		$this->options['domain'] = $domain;
-		return $this;
-	}
-
-	public function secure(string $secure)
-	{
-		$this->options['secure'] = $secure;
-		return $this;
-	}
-
-	public function httponly(string $httponly)
-	{
-		$this->options['httponly'] = $httponly;
-		return $this;
-	}
-
-
-	/**
 	 * 定义实例
 	 *
 	 * @var [type]
 	 */
 	private static $instance;
+
+	private $expire 	= 0; 		// 设置过期时间[时间戳],默认值 0
+	private $path 		= '/'; 		// Cookie 的有效路径
+	private $domain 	= ''; 		// Cookie 的作用域,默认在本域下
+	private $secure 	= false; 	// 设置 Cookie 只能通过 https传输,默认值 false
+	private $httponly 	= true; 	// 是否使用 https访问 Cookie,默认 false,如果设置成`true, 客户端 js 无法操作这个 Cookie了,使用这个参数可以减少 XSS攻击
+
+
+	/**
+	 * 初始化操作
+	 *
+	 * @param array $options
+	 */
+	private function __construct(array $options = [])
+	{
+		// 设置相关选项
+		$this->setOptions($options);
+	}
+
+
+	/**
+	 * 设置相关选项
+	 *
+	 * @param array $options
+	 * @return void
+	 */
+	private function setOptions(array $options = [])
+	{
+		if (isset($options['expire'])) {
+			$this->expire = (int) time() + $options['expire'];
+		}
+
+		if (isset($options['path'])) {
+			$this->path = $options['path'];
+		}
+
+		if (isset($options['domain'])) {
+			$this->domain = $options['domain'];
+		} else {
+			$this->domain = '.' . $_SERVER['HTTP_HOST'];
+		}
+
+		if (isset($options['secure'])) {
+			$this->secure = (bool) $options['secure'];
+		}
+
+		if (isset($options['httponly'])) {
+			$this->httponly = (bool) $options['httponly'];
+		}
+	}
 
 
 	/**
@@ -62,59 +67,50 @@ class Cookie
 	 *
 	 * @return void
 	 */
-	public static function instance()
+	public static function instance(array $options = [])
 	{
-		if (!self::$instance instanceof self) {
-			self::$instance = new self();
+		if (is_null(self::$instance)) {
+			$class = __CLASS__;
+			self::$instance = new $class($options);
 		}
 		return self::$instance;
 	}
 
 
 	/**
-	 * 初始化参数
-	 *
-	 * @return void
-	 */
-	public function initi()
-	{
-		$this->options['expire'] 	= empty($this->options['expire']) ? 0 : time() + $this->options['expire'];
-		$this->options['path'] 		= $this->options['path'] ?? '/';
-		$this->options['domain'] 	= $this->options['domain'] ?? '.' . $_SERVER['HTTP_HOST'];
-		$this->options['secure'] 	= $_SERVER['REQUEST_SCHEME'] == 'http' ? false : true;
-		$this->options['httponly'] 	= $this->options['httponly'] ?? true;
-	}
-
-
-	public function __call($method, $args)
-	{
-		// 初始化
-		$this->initi();
-		return call_user_func_array([$this, $method], $args);
-	}
-
-
-	/**
 	 * 设置 Cookie
 	 *
-	 * @param [type] $name
-	 * @param [type] $value
+	 * @param string $name 	Cookie 名称
+	 * @param [string || array] $value	Cookie 值
+	 * @param array $options
 	 * @return void
 	 */
-	protected function set(string $name, $value)
+	public function set(string $name, $value, array $options = [])
 	{
-		return setcookie($name, $value, $this->options['expire'], $this->options['path'], $this->options['domain'], $this->options['secure'], $this->options['httponly']);
+		if (is_array($options) && count($options) > 0) {
+			$this->setOptions($options);
+		}
+
+		if (is_array($value) || is_object($value)) {
+			$value = json_encode($value, JSON_UNESCAPED_UNICODE);
+		}
+		return setcookie($name, $value, $this->expire, $this->path, $this->domain, $this->secure, $this->httponly);
 	}
+
 
 	/**
 	 * 读取 Cookie
 	 *
-	 * @param [type] $name
+	 * @param string $name
 	 * @return void
 	 */
-	protected function get(string $name)
+	public function get(string $name)
 	{
 		if (isset($_COOKIE[$name])) {
+
+			if (is_json($_COOKIE[$name])) {
+				return json_decode($_COOKIE[$name], true);
+			}
 			return $_COOKIE[$name];
 		}
 		return null;
@@ -124,15 +120,15 @@ class Cookie
 	/**
 	 * 更新 Cookie
 	 *
-	 * @param [type] $name
-	 * @param [type] $value
+	 * @param string $name 	Cookie 名称
+	 * @param [string || array] $value	Cookie 值
+	 * @param array $options
 	 * @return void
 	 */
-	protected function update(string $name, $value)
+	public function update(string $name, $value, array $options = [])
 	{
-		return setcookie($name, $value, $this->options['expire'], $this->options['path'], $this->options['domain'], $this->options['secure'], $this->options['httponly']);
+		return $this->set($name, $value, $options);
 	}
-
 
 	/**
 	 * 删除 Cookie
@@ -140,8 +136,8 @@ class Cookie
 	 * @param string $name
 	 * @return void
 	 */
-	protected function del(string $name)
+	public function del(string $name)
 	{
-		return setcookie($name, '', $this->options['expire'] - 1, $this->options['path'], $this->options['domain'], $this->options['secure'], $this->options['httponly']);
+		return $this->set($name, '', ['expire' => time() - 1]);
 	}
 }
