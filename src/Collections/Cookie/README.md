@@ -15,6 +15,9 @@
     // 删除
     $Cookie->del('key');
 
+    // 删除全部
+    $Cookie->delAll();
+
     // 读取
     $Cookie->get('key');
 

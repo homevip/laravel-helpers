@@ -144,4 +144,24 @@ class Cookie
 		}
 		$this->set($name, '', ['expire' => time() - 1]);
 	}
+
+	
+	/**
+	 * 删除全部 Cookie
+	 *
+	 * @param array $options 相关选项
+	 * @return void
+	 */
+	public function delAll(array $options = [])
+	{
+		if (is_array($options) && count($options) > 0) {
+			$this->setOptions($options);
+		}
+
+		if (!empty($_COOKIE)) {
+			foreach ($_COOKIE as $name => $value) {
+				$this->set($name, '', ['expire' => time() - 1]);
+			}
+		}
+	}
 }
