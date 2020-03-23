@@ -28,9 +28,9 @@ trait ResponseJson
 	 * @param integer $code 错误码
 	 * @return void
 	 */
-	public function outError(int $code)
+	public function outError(int $code, string $data = NULL)
 	{
-		return $this->template($code, config('response_code')[$code], []);
+		return $this->template($code, config('response_code')[$code], [$data]);
 	}
 
 
