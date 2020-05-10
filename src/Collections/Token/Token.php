@@ -137,6 +137,7 @@ class Token implements IToken
      */
     public function decrypt(string $ciphertext)
     {
+        $this->initial();
         try {
             if ($result = Crypt::decrypt($ciphertext)) {
                 if ($this->token['aud'] != $result['aud']) {
