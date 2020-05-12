@@ -8,7 +8,7 @@ class Redis
 
     private $redis; // 连接资源
 
-    
+
     /**
      * 初始化操作
      *
@@ -23,11 +23,13 @@ class Redis
                 exit('yaconf 服务异常');
             }
 
+            // Yaconf 配置
+            $config = \Yaconf::get('config');
             $options = [
-                'host'      => \Yaconf::get('redis.PHP.REDIS_HOST'),
-                'port'      => \Yaconf::get('redis.PHP.REDIS_PORT'),
-                'password'  => \Yaconf::get('redis.PHP.REDIS_PASSWORD'),
-                'db'        => \Yaconf::get('redis.PHP.REDIS_DB'),
+                'host'      => $config['redis']['REDIS_HOST'],
+                'port'      => $config['redis']['REDIS_PORT'],
+                'password'  => $config['redis']['REDIS_PASSWORD'],
+                'db'        => $config['redis']['REDIS_DEFAULT_DB'],
             ];
         }
 

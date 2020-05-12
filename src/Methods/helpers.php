@@ -5,6 +5,9 @@
  * 
  * @return string 返回IP
  */
+
+use homevip\helper\Redis;
+
 if (!function_exists('getIP')) {
     function getIP()
     {
@@ -34,8 +37,14 @@ if (!function_exists('getIP')) {
 if (!function_exists('S')) {
     function S(string $name, $value = '', int $options = 60)
     {
-        $cache = app('redis')->connection('cache');
-        $name = 'S_' . md5($name);
+        // Yaconf 配置
+        $config = \Yaconf::get('config');
+        $cache = Redis::instance([
+            'host'      => $config['redis']['REDIS_HOST'],
+            'port'      => $config['redis']['REDIS_PORT'],
+            'password'  => $config['redis']['REDIS_PASSWORD'],
+            'db'        => $config['redis']['REDIS_DEFAULT_DB'],
+        ]);
 
         if ('' === $value) {
             // 获取缓存
