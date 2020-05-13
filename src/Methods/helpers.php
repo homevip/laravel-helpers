@@ -37,14 +37,13 @@ if (!function_exists('getIP')) {
 if (!function_exists('S')) {
     function S(string $name, $value = '', int $options = 60)
     {
-        // Yaconf 配置
-        $config = \Yaconf::get('config');
-        $cache = Redis::instance([
-            'host'      => $config['redis']['REDIS_HOST'],
-            'port'      => $config['redis']['REDIS_PORT'],
-            'password'  => $config['redis']['REDIS_PASSWORD'],
-            'db'        => $config['redis']['REDIS_DEFAULT_DB'],
-        ]);
+        $config = [
+            'host'      => config('database.redis.cache.host'),
+            'port'      => config('database.redis.cache.port'),
+            'password'  => config('database.redis.cache.password'),
+            'db'        => config('database.redis.cache.database'),
+        ];
+        $cache = new Redis($config);
 
         if ('' === $value) {
             // 获取缓存
