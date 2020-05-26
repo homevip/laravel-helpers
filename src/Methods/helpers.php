@@ -186,6 +186,31 @@ if (!function_exists('sql_debug')) {
 
 
 /**
+ * 错误输出
+ * 程序终止
+ *
+ * @param integer $code
+ * @param [type] $msg
+ * @param array $data
+ * @return void
+ */
+if (!function_exists('error')) {
+    function error($code = 200, $msg = NULL, $data = [])
+    {
+        $data = [
+            'code'      => $code,
+            'msg'       => $msg ?? config('response_code')[$code],
+            'data'      => $data
+        ];
+
+        // 返回JSON数据格式到客户端 包含状态信息
+        header('Content-Type:application/json; charset=utf-8');
+        exit(json_encode($data));
+    }
+}
+
+
+/**
  * 检测是否是JSON数据
  * 
  * @param string $string   字符串
