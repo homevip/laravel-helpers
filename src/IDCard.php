@@ -1,6 +1,6 @@
 <?php
 
-namespace homevip\helper\IDCard;
+namespace homevip\helper;
 
 
 /**

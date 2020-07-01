@@ -1,6 +1,6 @@
 <?php
 
-namespace homevip\helper\Cookie;
+namespace homevip\helper;
 
 class Cookie
 {

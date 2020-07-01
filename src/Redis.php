@@ -1,6 +1,6 @@
 <?php
 
-namespace homevip\helper\Redis;
+namespace homevip\helper;
 
 class Redis
 {
